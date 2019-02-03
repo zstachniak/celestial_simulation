@@ -17,4 +17,4 @@ use sound theoretical calculations wherever possible. If you find an error,
 please let me know.
 
 Values of constants and testing data are often approximated values. I have 
-made an effort to credit the source where necessary. 
+made an effort to credit the source where possible. 
