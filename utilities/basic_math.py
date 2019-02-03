@@ -1,5 +1,6 @@
 import math
 from numbers import Real
+from facts.numerical_constants import gravity_on_earth
 
 
 def calculate_density(mass: float, volume: float) -> float:
@@ -36,11 +37,14 @@ def calculate_volume_of_sphere(radius: float) -> float:
 
 
 def convert_weight_in_newtons_to_kilograms(
-        weight_in_newtons: float, gravitational_acceleration: float) -> float:
+        weight_in_newtons: float,
+        gravitational_acceleration: float = gravity_on_earth) -> float:
     """Function converts weight in Newtons to kilograms.
 
     :param float weight_in_newtons: weight of object in Newtons
-    :param float gravitational_acceleration: gravity on planetary body
+    :param float gravitational_acceleration: gravity on the planetary body
+    with which you are measuring weight against (typically, this will be
+    earth's gravity.
     :return: weight of object in kilograms
     :rtype: float
     """
