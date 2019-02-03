@@ -10,6 +10,10 @@ By nature of using simple equations to approximate very complex
 astrophysical interactions, this project is not intended to predict reality, 
 but to help the user understand how small fluctuations can affect planetary 
 bodies.
+
+## Example Use
+Check out the example.ipynb for a Jupyter Notebook demonstration of features
+ currently available.
  
 ### Author's Note
 Although this project is not intended for serious application, I do attempt to 
