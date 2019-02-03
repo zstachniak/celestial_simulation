@@ -5,3 +5,4 @@ stefan_boltzmann_constant = 5.67e-08
 solar_mass = 1.989e+30
 astronomical_unit = 1.496e+8
 pounds_in_a_kilogram = 2.20462
+gravity_on_earth = 9.8
