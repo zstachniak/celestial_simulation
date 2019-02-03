@@ -201,20 +201,4 @@ class PlanetaryBody(CelestialBody):
             gravity.calculate_gravitational_force_between_two_objects(
                 self.mass, mass_of_object, self.radius)
         return basic_math.convert_weight_in_newtons_to_kilograms(
-            weight_in_newtons, self.gravitational_acceleration)
-
-
-# Checks
-from facts.fact_sheets import planetary_facts, sun_facts
-earth = PlanetaryBody(planetary_facts["Earth"]["mass"],
-                      planetary_facts["Earth"]["radius"])
-earth.calculate_weight_on_surface()
-print(earth)
-repr(earth)
-
-sag_a = BlackHole(sun_facts["mass"] * 4000000)
-print(sag_a)
-
-sol = SolarBody(sun_facts["mass"], sun_facts["radius"],
-                sun_facts["mean temperature"])
-print(sol)
+            weight_in_newtons)
