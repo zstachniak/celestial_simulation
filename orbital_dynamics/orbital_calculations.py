@@ -53,13 +53,14 @@ def calculate_orbital_period(
 
     Formula: T^2 = (4pi^2 * a^3) / G(M1 + M2)
 
-    :param float semimajor_axis: the semi-major axis of the ellipse
-    :param float primary_body_mass: the mass of the primary body
-    :param float orbiting_body_mass: the mass of the orbiting body
-    :return: the orbital period
+    :param float semimajor_axis: the semi-major axis of the ellipse in km
+    :param float primary_body_mass: the mass of the primary body in kg
+    :param float orbiting_body_mass: the mass of the orbiting body in kg
+    :return: the orbital period in years
     :rtype: float
     """
     return math.pow(
-        (4 * math.pow(math.pi, 2) * math.pow(semimajor_axis, 3))
-        / (gravitational_constant * (primary_body_mass + orbiting_body_mass)),
-        1/2)
+        ((4 * math.pow(math.pi, 2))
+         / (gravitational_constant * (primary_body_mass + orbiting_body_mass)))
+        * math.pow(semimajor_axis * 1000, 3),
+        1/2) / (60 * 60 * 24 * 365)
