@@ -1,4 +1,5 @@
 import math
+from numbers import Real
 from facts.numerical_constants import gravitational_constant
 
 
@@ -14,6 +15,16 @@ def calculate_semiminor_axis_of_ellipse(
     :return: the semi-minor axis of the ellipse
     :rtype: float
     """
+    if not isinstance(semimajor_axis, Real):
+        raise TypeError(f"semi-major axis ({semimajor_axis}) must be a Real "
+                        f"number.")
+    if semimajor_axis <= 0:
+        raise ValueError(f"semi-major axis {semimajor_axis} must be positive.")
+    if not isinstance(eccentricity, Real):
+        raise TypeError(f"eccentricity {eccentricity} must be a Real number.")
+    if eccentricity < 0 or eccentricity >= 1:
+        raise ValueError(f"eccentricity {eccentricity} must be in the range "
+                         f"0 <= e < 1")
     return math.pow(
         math.pow(semimajor_axis, 2) * (1 - math.pow(eccentricity, 2)), 1/2)
 
@@ -29,6 +40,16 @@ def calculate_perihelion_of_ellipse(
     :return: the perihelion of the ellipse
     :rtype: float
     """
+    if not isinstance(semimajor_axis, Real):
+        raise TypeError(f"semi-major axis ({semimajor_axis}) must be a Real "
+                        f"number.")
+    if semimajor_axis <= 0:
+        raise ValueError(f"semi-major axis {semimajor_axis} must be positive.")
+    if not isinstance(eccentricity, Real):
+        raise TypeError(f"eccentricity {eccentricity} must be a Real number.")
+    if eccentricity < 0 or eccentricity >= 1:
+        raise ValueError(f"eccentricity {eccentricity} must be in the range "
+                         f"0 <= e < 1")
     return semimajor_axis * (1 - eccentricity)
 
 
@@ -43,6 +64,16 @@ def calculate_aphelion_of_ellipse(
     :return: the aphelion of the ellipse
     :rtype: float
     """
+    if not isinstance(semimajor_axis, Real):
+        raise TypeError(f"semi-major axis ({semimajor_axis}) must be a Real "
+                        f"number.")
+    if semimajor_axis <= 0:
+        raise ValueError(f"semi-major axis {semimajor_axis} must be positive.")
+    if not isinstance(eccentricity, Real):
+        raise TypeError(f"eccentricity {eccentricity} must be a Real number.")
+    if eccentricity < 0 or eccentricity >= 1:
+        raise ValueError(f"eccentricity {eccentricity} must be in the range "
+                         f"0 <= e < 1")
     return semimajor_axis * (1 + eccentricity)
 
 
@@ -56,11 +87,28 @@ def calculate_orbital_period(
     :param float semimajor_axis: the semi-major axis of the ellipse in km
     :param float primary_body_mass: the mass of the primary body in kg
     :param float orbiting_body_mass: the mass of the orbiting body in kg
-    :return: the orbital period in years
+    :return: the orbital period in days
     :rtype: float
     """
+    if not isinstance(semimajor_axis, Real):
+        raise TypeError(f"semi-major axis ({semimajor_axis}) must be a Real "
+                        f"number.")
+    if semimajor_axis <= 0:
+        raise ValueError(f"semi-major axis {semimajor_axis} must be positive.")
+    if not isinstance(primary_body_mass, Real):
+        raise TypeError(f"primary_body_mass {primary_body_mass} must be a "
+                        f"Real number.")
+    if primary_body_mass <= 0:
+        raise ValueError(f"primary_body_mass {primary_body_mass} must be "
+                         f"positive.")
+    if not isinstance(orbiting_body_mass, Real):
+        raise TypeError(f"orbiting_body_mass {orbiting_body_mass} must be a "
+                        f"Real number.")
+    if orbiting_body_mass <= 0:
+        raise ValueError(f"orbiting_body_mass {orbiting_body_mass} must be "
+                         f"positive.")
     return math.pow(
         ((4 * math.pow(math.pi, 2))
          / (gravitational_constant * (primary_body_mass + orbiting_body_mass)))
         * math.pow(semimajor_axis * 1000, 3),
-        1/2) / (60 * 60 * 24 * 365)
+        1/2) / (60 * 60 * 24)
