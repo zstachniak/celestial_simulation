@@ -1,4 +1,5 @@
 import math
+import re
 from gravity import gravity
 from luminosity import luminosity
 from utilities import basic_math
@@ -22,24 +23,34 @@ class CelestialBody:
         "gravitational_acceleration": "meters / second squared",
         "luminosity": "Joules / second"
     }
+    __primary_body = None
+    __orbiting_bodies = []
 
-    def __init__(self, mass: float, radius: float):
+    def __init__(self, mass: float, radius: float, name: str = None):
         """
 
-        :param mass: the mass of the celestial body in kilograms
-        :param radius: the radius of the celestial body (assumed to be roughly
-        spherical) in meters
+        :param float mass: the mass of the celestial body in kilograms
+        :param float radius: the radius of the celestial body (assumed to be
+        roughly spherical) in meters
+        :param str name: the name of the celestial body (if None is supplied,
+        will default to "Unnamed" celestial body
         """
         self.mass = mass
         self.radius = radius
+        self.celestial_body_type = re.sub(
+            r'([A-Z])', r' \1', self.__class__.__name__).strip()
+        if name is None:
+            self.name = "Unnamed Celestial Body"
+        else:
+            self.name = name
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.mass}, {self.radius})"
 
     def __str__(self):
         """To easily subclass, add subclass-specific stats to the
-        additional_stats property."""
-        return self.basic_stats + self.additional_stats
+        additional_stats or orbital_stats property."""
+        return self.basic_stats + self.additional_stats + self.orbital_stats
 
     @property
     def basic_stats(self) -> str:
@@ -49,13 +60,30 @@ class CelestialBody:
         :return: basic statistics of the celestial body
         :rtype: str
         """
-        return f"""{self.__class__.__name__}:
+        return f"""{self.name} ({self.celestial_body_type}):
     mass: {self.mass} {self.default_unit['mass']}
     radius: {self.radius} {self.default_unit['distance']}
     volume: {self.volume} {self.default_unit['volume']}
     density: {self.density} {self.default_unit['density']}
     gravitational_acceleration: {self.gravitational_acceleration} {
         self.default_unit['gravitational_acceleration']}"""
+
+    @property
+    def orbital_stats(self) -> str:
+        """Returns string names of the primary and orbiting bodies of
+        the celestial body (if any exist).
+
+        :return: names of primary and orbiting bodies (if any)
+        :rtype: str
+        """
+        return_str = ""
+        if self.__primary_body is not None:
+            return_str += f"\nOrbits around {self.__primary_body.name}"
+        if len(self.__orbiting_bodies) > 0:
+            orbiting_bodies = ", ".join(
+                [x.name for x in self.__orbiting_bodies])
+            return_str += f"\nOrbited by: {orbiting_bodies}"
+        return return_str
 
     @property
     def additional_stats(self) -> str:
@@ -113,7 +141,7 @@ class CelestialBody:
 class BlackHole(CelestialBody):
     """subclasses CelestialBody : is a CelestialBody"""
 
-    def __init__(self, mass: float):
+    def __init__(self, mass: float, name: str = None):
         """Only the mass of the black hole is requested as a parameter,
         as the radius will be directly calculated.
 
@@ -124,7 +152,7 @@ class BlackHole(CelestialBody):
         :param float mass: the mass of the black hole in kilograms
         """
         self.mass = mass
-        super().__init__(self.mass, self.event_horizon)
+        super().__init__(self.mass, self.event_horizon, name)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.mass})"
@@ -143,7 +171,8 @@ class BlackHole(CelestialBody):
 class SolarBody(CelestialBody):
     """subclasses CelestialBody : is a CelestialBody"""
 
-    def __init__(self, mass: float, radius: float, temperature: float):
+    def __init__(self, mass: float, radius: float, temperature: float,
+                 name: str = None):
         """For a solar body, we also require temperature as an initializing
         parameter, as this allows the luminosity to be calculated.
 
@@ -153,7 +182,7 @@ class SolarBody(CelestialBody):
         in degrees Kelvin
         """
         self.temperature = temperature
-        super().__init__(mass, radius)
+        super().__init__(mass, radius, name)
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.mass}, {self.radius}, " \
