@@ -1,6 +1,7 @@
 """Planetary Facts from Our Solar System
 Note that some values were converted to desired units.
 Credit: https://nssdc.gsfc.nasa.gov/planetary/factsheet/
+Supplemented by lookups for semi-minor axis.
 """
 planetary_facts = {
     "Mercury": {
@@ -12,6 +13,7 @@ planetary_facts = {
         "rotation period": 1407.6,
         "length of day": 4222.6,
         "distance from sun": 5.79e+07,
+        "semi-minor axis": 56671537,
         "perihelion": 4.6e+07,
         "aphelion": 6.98e+07,
         "orbital period": 88.0,
@@ -34,6 +36,7 @@ planetary_facts = {
         "rotation period": -5832.5,
         "length of day": 2802.0,
         "distance from sun": 1.082e+08,
+        "semi-minor axis": 108206428,
         "perihelion": 1.075e+08,
         "aphelion": 1.089e+08,
         "orbital period": 224.7,
@@ -56,6 +59,7 @@ planetary_facts = {
         "rotation period": 23.9,
         "length of day": 24.0,
         "distance from sun": 1.496e+08,
+        "semi-minor axis": 149576999.826,
         "perihelion": 1.471e+08,
         "aphelion": 1.521e+08,
         "orbital period": 365.2,
@@ -100,6 +104,7 @@ planetary_facts = {
         "rotation period": 24.6,
         "length of day": 24.7,
         "distance from sun": 2.279e+08,
+        "semi-minor axis": 226939986,
         "perihelion": 2.066e+08,
         "aphelion": 2.492e+08,
         "orbital period": 687.0,
