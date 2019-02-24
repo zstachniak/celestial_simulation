@@ -197,9 +197,9 @@ class SolarBody(CelestialBody):
         :rtype: str
         """
         return f"""
-        Harvard Spectral Classification: {self.harvard_spectral_classification}
-        luminosity: {self.luminosity} {self.default_unit['luminosity']}
-        chromaticity: {self.chromaticity}"""
+    Harvard Spectral Classification: {self.harvard_spectral_classification}
+    luminosity: {self.luminosity} {self.default_unit['luminosity']}
+    chromaticity: {self.chromaticity}"""
 
     @property
     def luminosity(self) -> float:
