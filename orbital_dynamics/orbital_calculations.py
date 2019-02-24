@@ -112,3 +112,39 @@ def calculate_orbital_period(
          / (gravitational_constant * (primary_body_mass + orbiting_body_mass)))
         * math.pow(semimajor_axis * 1000, 3),
         1/2) / (60 * 60 * 24)
+
+
+def calculate_planetary_surface_temperature(
+        semimajor_axis: float, solar_radius: float,
+        solar_temperature: float) -> float:
+    """Calculates the average surface temperature of an orbiting planet
+    based solely on its proximity to its star (i.e., the effects of
+    atmosphere are ignored).
+
+    Formula: Tp = (Rs / 2a)^1/2 * Ts
+
+    :param float semimajor_axis: semimajor axis of orbiting planet (i.e.,
+    average distance to sun)
+    :param float solar_radius: radius of sun
+    :param float solar_temperature: average surface temperature (Kelvin) of sun
+    :return: average surface temperature (Kelvin) of planet
+    :rtype: float
+    """
+    if not isinstance(semimajor_axis, Real):
+        raise TypeError(f"semi-major axis ({semimajor_axis}) must be a Real "
+                        f"number.")
+    if semimajor_axis <= 0:
+        raise ValueError(f"semi-major axis {semimajor_axis} must be positive.")
+    if not isinstance(solar_radius, Real):
+        raise TypeError(f"solar_radius ({solar_radius}) must be a Real "
+                        f"number.")
+    if solar_radius <= 0:
+        raise ValueError(f"solar_radius {solar_radius} must be positive.")
+    if not isinstance(solar_temperature, Real):
+        raise TypeError(f"solar_temperature ({solar_temperature}) must be a "
+                        f"Real number.")
+    if solar_temperature <= 0:
+        raise ValueError(f"solar_temperature {solar_temperature} must be "
+                         f"positive.")
+    return math.pow(
+        (solar_radius / (2 * semimajor_axis)), 0.5) * solar_temperature

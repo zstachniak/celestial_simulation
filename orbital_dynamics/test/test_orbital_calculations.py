@@ -164,3 +164,42 @@ def test_type_error_calculate_orbital_period(
     with pytest.raises(TypeError):
         calculate_orbital_period(semimajor_axis, primary_body_mass,
                                  orbiting_body_mass)
+
+
+@pytest.mark.parametrize(
+    "semimajor_axis,solar_radius,solar_temperature,expectation", [
+        (planetary_facts["Earth"]["distance from sun"], sun_facts["radius"],
+         sun_facts["mean temperature"], 279)
+    ])
+def test_calculate_planetary_surface_temperature(
+        semimajor_axis, solar_radius, solar_temperature, expectation):
+    planet_temperature = calculate_planetary_surface_temperature(
+        semimajor_axis, solar_radius, solar_temperature)
+    assert isclose(planet_temperature, expectation, rel_tol=0.01)
+
+
+@pytest.mark.parametrize("semimajor_axis,solar_radius,solar_temperature", [
+    ("hello", 1000, 1000),
+    (1000, "world", 1000),
+    (1000, 1000, "again"),
+    ("hello", "world", "again"),
+    ([1, 2, 3], 1000, 1000)
+])
+def test_type_error_calculate_planetary_surface_temperature(
+        semimajor_axis, solar_radius, solar_temperature):
+    with pytest.raises(TypeError):
+        calculate_planetary_surface_temperature(
+            semimajor_axis, solar_radius, solar_temperature)
+
+
+@pytest.mark.parametrize("semimajor_axis,solar_radius,solar_temperature", [
+    (-1, 1000, 1000),
+    (1000, -1, 1000),
+    (1000, 1000, -1),
+    (0, 0, 0)
+])
+def test_value_error_calculate_planetary_surface_temperature(
+        semimajor_axis, solar_radius, solar_temperature):
+    with pytest.raises(ValueError):
+        calculate_planetary_surface_temperature(
+            semimajor_axis, solar_radius, solar_temperature)
