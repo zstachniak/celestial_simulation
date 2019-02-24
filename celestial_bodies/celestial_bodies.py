@@ -197,12 +197,40 @@ class SolarBody(CelestialBody):
         :rtype: str
         """
         return f"""
-    luminosity: {self.luminosity} {self.default_unit['luminosity']}"""
+        Harvard Spectral Classification: {self.harvard_spectral_classification}
+        luminosity: {self.luminosity} {self.default_unit['luminosity']}
+        chromaticity: {self.chromaticity}"""
 
     @property
     def luminosity(self) -> float:
+        """Returns the luminosity of the solar body.
+
+        :return: luminosity of the solar body
+        :rtype: float
+        """
         return luminosity.calculate_stefan_boltzmann_luminosity(
             self.radius, self.temperature)
+
+    @property
+    def harvard_spectral_classification(self) -> str:
+        """Returns the Harvard Spectral Classification based on temperature.
+
+        :return: Harvard Spectral Classification
+        :rtype: str
+        """
+        return luminosity.classify_harvard_spectral_classification(
+            self.temperature)[0]
+
+    @property
+    def chromaticity(self) -> str:
+        """Returns the chromaticity of the solar body based on temperature.
+        Note that this will be a color description.
+
+        :return: chromaticity of solar body
+        :rtype: str
+        """
+        return luminosity.classify_harvard_spectral_classification(
+            self.temperature)[1]
 
 
 class PlanetaryBody(CelestialBody):
