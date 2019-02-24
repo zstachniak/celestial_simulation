@@ -23,8 +23,6 @@ class CelestialBody:
         "gravitational_acceleration": "meters / second squared",
         "luminosity": "Joules / second"
     }
-    __primary_body = None
-    __orbiting_bodies = []
 
     def __init__(self, mass: float, radius: float, name: str = None):
         """
@@ -43,6 +41,8 @@ class CelestialBody:
             self.name = "Unnamed Celestial Body"
         else:
             self.name = name
+        self.primary_body = None
+        self.orbiting_bodies = []
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self.mass}, {self.radius})"
@@ -77,11 +77,11 @@ class CelestialBody:
         :rtype: str
         """
         return_str = ""
-        if self.__primary_body is not None:
-            return_str += f"\nOrbits around {self.__primary_body.name}"
-        if len(self.__orbiting_bodies) > 0:
+        if self.primary_body is not None:
+            return_str += f"\nOrbits around {self.primary_body.name}"
+        if len(self.orbiting_bodies) > 0:
             orbiting_bodies = ", ".join(
-                [x.name for x in self.__orbiting_bodies])
+                [x.name for x in self.orbiting_bodies])
             return_str += f"\nOrbited by: {orbiting_bodies}"
         return return_str
 

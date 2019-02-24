@@ -109,9 +109,9 @@ class Orbit:
 
         :return: None
         """
-        getattr(self.primary_body, "__orbiting_bodies").append(
+        getattr(self.primary_body, "orbiting_bodies").append(
             self.orbiting_body)
-        setattr(self.orbiting_body, "__primary_body", self.primary_body)
+        setattr(self.orbiting_body, "primary_body", self.primary_body)
 
     def _collison_detection(self):
         """Tests for obvious near-term collisions and raises CollisionError
