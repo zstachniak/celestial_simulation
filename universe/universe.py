@@ -1,4 +1,6 @@
 from orbital_dynamics.orbit import *
+import matplotlib.pyplot as plt
+from matplotlib.patches import Arc, Circle
 
 
 class Universe:
@@ -155,3 +157,144 @@ class Universe:
             # Celestial body is not already in orbit
             self.__orbits.append(orbit)
             self._build_acyclic_graph_of_orbits()
+
+    def plot_orbits(self, primary_body: str,
+                    simulate_three_dimensions: float = True):
+        """Plots the orbits around a chosen primary body.
+
+        Scaling Notes:
+        The size of the celestial bodies will be greatly exaggerated
+        relative to their orbits for the purpose of being able to see them.
+        Planet sizes are to-scale, but note that there is an absolute
+        minimum defined for visibility purposes. Because of the much greater
+        size of most primary bodies, this will tend to make all orbiting
+        bodies look about the same size.
+
+        In addition, by default the semi-minor axis of every orbit will be
+        squashed to simulate a three-dimensional effect.
+
+        The distance from the origin of the primary body to the origin of
+        the orbiting bodies is always to scale, with an absolute minimum
+        defined so as to be greater than the size of the primary body.
+
+        To Do List:
+        [ ] colors of all celestial bodies relate to average temperature
+
+        :param str primary_body: the name of the primary body (must be a
+        celestial body that has been added to the universe)
+        :param bool simulate_three_dimensions: whether or not to simulate a 3D
+        effect by squashing the semi-minor axis
+        :return: None
+        """
+        if primary_body not in self.__celestial_bodies:
+            raise KeyError(f"{primary_body} is not recognized as the name of "
+                           f"a celestial body that has been added to this "
+                           f"universe.")
+        if simulate_three_dimensions is True:
+            three_dim_val = 0.1
+        else:
+            three_dim_val = 1.0
+        background_orbits = []
+        foreground_orbits = []
+        celestial_bodies = []
+        # Gather orbits around primary body
+        orbits = [o for o in self.__orbits
+                  if o.primary_body == self.__celestial_bodies[primary_body]]
+        # Set origin and scaling values
+        origin = (0, 0)
+        figure_width = 16
+        figure_height = 9
+        min_orbit = orbits[0].semimajor_axis
+        max_orbit = orbits[-1].semimajor_axis
+        planet_radii = [o.orbiting_body.radius for o in orbits]
+        planet_radii = planet_radii + [orbits[0].primary_body.radius]
+        min_radius = min(planet_radii)
+        max_radius = max(planet_radii)
+
+        def scale_orbit(value, max_val=figure_width,
+                        min_val=figure_width * 0.15):
+            scaled = (value - min_orbit) / (max_orbit - min_orbit)
+            return scaled * (max_val - min_val) + min_val
+
+        def scale_planet(value, max_val=figure_width * 0.08,
+                         min_val=figure_width * 0.005):
+            scaled = (value - min_radius) / (max_radius - min_radius)
+            return scaled * (max_val - min_val) + min_val
+
+        # Add primary body
+        celestial_bodies.append(Circle(
+            origin,
+            scale_planet(self.__celestial_bodies[primary_body].radius),
+            facecolor="yellow",
+            edgecolor="black",
+            label=primary_body
+        ))
+        # Add orbiting bodies and their orbital paths
+        for orbit in orbits:
+            color = "blue"
+            name = orbit.orbiting_body.name
+            legend_name = f"{name}: p = {orbit.period:0,.0f} days"
+            radius = scale_planet(orbit.orbiting_body.radius)
+            width = scale_orbit(orbit.semimajor_axis) * 2
+            height = scale_orbit(orbit.semiminor_axis) * 2 * \
+                three_dim_val
+            background_orbits.append(Arc(
+                origin,
+                width,
+                height,
+                theta1=0.0,
+                theta2=180.0,
+                facecolor=color,
+                edgecolor="black",
+                fill=False,
+                label=legend_name
+            ))
+            foreground_orbits.append(Arc(
+                origin,
+                width,
+                height,
+                theta1=180.0,
+                theta2=0.0,
+                facecolor=color,
+                edgecolor="black",
+                fill=False,
+                label=legend_name
+            ))
+            celestial_bodies.append(Circle(
+                ((width / 2), 0),
+                radius,
+                facecolor=color,
+                edgecolor="black",
+                label=legend_name
+            ))
+        # Plot
+        fig, ax = plt.subplots(
+            subplot_kw={"aspect": "equal"},
+            figsize=(figure_width, figure_height),
+            dpi=180
+        )
+        for arc in background_orbits:
+            ax.add_artist(arc)
+            arc.set_clip_box(ax.bbox)
+        for circle in celestial_bodies:
+            ax.add_artist(circle)
+            circle.set_clip_box(ax.bbox)
+        for arc in foreground_orbits:
+            ax.add_artist(arc)
+            arc.set_clip_box(ax.bbox)
+        ax.set_xlim(-(figure_width + figure_width * 0.1),
+                    figure_width + figure_width * 0.1)
+        ax.set_ylim(-figure_height, figure_height)
+        # Set x_ticks to be scaled
+        x_ticks = [-figure_width, -(figure_width / 2), 0.0, figure_width / 2,
+                   figure_width]
+        ax.set_xticks(x_ticks)
+        x_tick_labels = [f"{item * max_orbit:.2E} km" for item in x_ticks]
+        ax.set_xticklabels(x_tick_labels)
+        # Remove y_axis
+        ax.get_yaxis().set_visible(False)
+        ax.set_title(f"Orbiting Bodies around {primary_body}")
+        plt.tick_params(axis='both', which='major', labelsize=10)
+        plt.legend(handles=celestial_bodies, loc=2, prop={'size': 10},
+                   title="Orbiting Bodies and Orbital Period")
+        plt.show()
