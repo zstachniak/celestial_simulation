@@ -1,3 +1,4 @@
+from typing import List, Dict
 from orbital_dynamics.orbit import *
 import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, Circle
@@ -7,38 +8,104 @@ class Universe:
     """Defines a container for celestial bodies and their orbits.
 
     To Do List:
-    [ ] repr
     [ ] str (pretty print)
     [ ] add collision detection against other orbits
-    [ ] plot orbits (ellipses)
-    [ ] function that checks for planetary bodies that aren't orbiting
-    anything (untethered planets)
     """
-    __celestial_bodies = {}
-    __orbits = []
-    __orbital_graph = {}
-    __unnamed_id = 1
+    __celestial_bodies: Dict[str, CelestialBody]
+    __orbits: List[Orbit]
+    __orbital_graph: Dict[CelestialBody, dict]
+    __unnamed_id: int
 
-    def __init__(self, name: str = None):
-        """docstring"""
+    def __init__(self, name: str = None) -> None:
+        """Initializes a Universe, a container for CelestialBodies and their
+        Orbits.
+
+        :param str name: the name of the Universe
+        :return: None
+        """
         if name is None:
             self.name = "Unnamed Universe"
         else:
             self.name = name
+        self.__celestial_bodies = {}
+        self.__orbits = []
+        self.__orbital_graph = {}
+        self.__unnamed_id = 1
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.name})"
+
+    def untethered_planets(self) -> Dict[str, CelestialBody]:
+        """Returns a dictionary of the untethered CelestialBodies in the
+        Universe (i.e., any CelestialBody which does not orbit around
+        another body). Ignores the CelestialBody at the root of all orbits.
+
+        :return: dictionary of untethered CelestialBodies
+        :rtype: Dict[str, CelestialBody]
+        """
+        orbiting_bodies = [x.orbiting_body for x in self.__orbits]
+        untethered = {k: cb for k, cb in self.__celestial_bodies.items()
+                      if cb not in orbiting_bodies
+                      and cb not in self.__orbital_graph}
+        return untethered
+
+    @property
+    def celestial_bodies(self) -> Dict[str, CelestialBody]:
+        """Simple getter for the dictionary of the names and CelestialBodies
+        that exist in the Universe. Note that the user is barred from
+        directly assigning, and should use the add_celestial_body() method
+        for assignment.
+
+        :return: dictionary of CelestialBodies in the Universe
+        :rtype: Dict[str, CelestialBody]
+        """
+        return self.__celestial_bodies
+
+    @property
+    def orbits(self) -> List[Orbit]:
+        """Simple getter for the list of Orbits in the Universe. Note that
+        the user is barred from directly assigning, and should use the
+        add_orbit() method for assignment.
+
+        :return: list of Orbits in the Universe
+        :rtype: List[Orbit]
+        """
+        return self.__orbits
+
+    def alter_celestial_body_name(
+            self, current_name: str, new_name: str) -> None:
+        """Alters the name of a celestial body that is already part of a
+        Universe class.
+
+        :param str current_name: the current name of the CelestialBody
+        :param str new_name: the new, desired name of the Celestial Body
+        :return: None
+        """
+        if current_name not in self.__celestial_bodies:
+            raise KeyError(f"No celestial body with the name {current_name} "
+                           f"exists in {self.name}")
+        if new_name in self.__celestial_bodies:
+            raise ValueError(f"A celestial body with the name {new_name} "
+                             f"already exist in {self.name}.")
+        setattr(self.__celestial_bodies[current_name], "__name", new_name)
+        self.__celestial_bodies[new_name] = self.__celestial_bodies.pop(
+            current_name)
 
     def _ensure_celestial_body_exists_in_universe(
-            self, celestial_body: CelestialBody):
-        """
+            self, celestial_body: CelestialBody) -> None:
+        """Raises AttributeError if the CelestialBody has not been added to
+        the Universe.
 
-        :param celestial_body:
-        :return:
+        :param CelestialBody celestial_body: celestial body in question
+        :return:None
+        :raises: AttributeError
         """
         if celestial_body.name not in self.__celestial_bodies:
             raise AttributeError(f"{celestial_body.name} does not exist in "
-                                 f"this universe. To add, use the "
+                                 f"{self.name}. To add, use the "
                                  f"add_celestial_body() method.")
 
-    def add_celestial_body(self, celestial_body: CelestialBody):
+    def add_celestial_body(self, celestial_body: CelestialBody) -> None:
         """Adds a celestial body to the universe. The name of the celestial
         body must be unique to the universe. If no name is provided, a unique
         ID will be assigned.
@@ -47,8 +114,8 @@ class Universe:
         :return: None
         """
         if celestial_body.name == "Unnamed Celestial Body":
-            celestial_body.name = f"Unnamed Celestial Body " \
-                f"{self.__unnamed_id}"
+            setattr(celestial_body, "__name",
+                    f"Unnamed Celestial Body {self.__unnamed_id}")
             self.__unnamed_id += 1
         if celestial_body.name in self.__celestial_bodies:
             raise ValueError(f"A celestial body with the name "
@@ -74,7 +141,7 @@ class Universe:
             else:
                 self.__recursive_orbit_get_name(edge, return_list, level + 1)
 
-    def print_celestial_bodies_by_orbit(self):
+    def print_celestial_bodies_by_orbit(self) -> None:
         """Prints the acyclic graph representing the orbits in the Universe.
 
         Example:
@@ -93,7 +160,7 @@ class Universe:
         """
         return_list = [f"{self.name}:"]
         if len(self.__orbital_graph) == 0:
-            return f"No orbits detected in {self.name}"
+            print(f"No orbits detected in {self.name}")
         else:
             for root, edges in self.__orbital_graph.items():
                 level = 1
@@ -103,12 +170,14 @@ class Universe:
                     edges, return_list, level + 1)
         print("".join(return_list))
 
-    def __recursive_graph_sort(self, root):
+    def __recursive_graph_sort(
+            self, root: CelestialBody) -> Dict[CelestialBody: dict]:
         """Recursively walks through orbits to return the edges between
         vertices.
 
-        :param root:
-        :return:
+        :param CelestialBody root: CelestialBody at the root of the graph
+        :return: a dictionary of key: Celestial Body, value: dict
+        :rtype: Dict[CelestialBody: dict]
         """
         edges = [x.orbiting_body for x in self.__orbits
                  if x.primary_body == root]
@@ -117,7 +186,7 @@ class Universe:
         else:
             return {edge: self.__recursive_graph_sort(edge) for edge in edges}
 
-    def _build_acyclic_graph_of_orbits(self):
+    def _build_acyclic_graph_of_orbits(self) -> None:
         """Builds an acyclic graph of orbits, represented as a nested
         dictionary. If multiple celestial bodies are in orbit, they will be
         presented in order of the nearest celestial body (as measured by
@@ -136,7 +205,7 @@ class Universe:
             graph[root] = self.__recursive_graph_sort(root)
         self.__orbital_graph = graph
 
-    def add_orbit(self, orbit: Orbit):
+    def add_orbit(self, orbit: Orbit) -> None:
         """Adds an orbit to the universe. Checks are made to ensure that:
             A) both celestial bodies already exist in the universe
             B) the orbiting body has not already been defined as being in
@@ -178,7 +247,9 @@ class Universe:
         defined so as to be greater than the size of the primary body.
 
         To Do List:
-        [ ] colors of all celestial bodies relate to average temperature
+        [ ] color of sun based on chromaticity
+        [ ] temperature of planet indicated on a secondary subplot
+        [ ] colors of planets based on a "color" attribute?
 
         :param str primary_body: the name of the primary body (must be a
         celestial body that has been added to the universe)
