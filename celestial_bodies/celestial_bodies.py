@@ -38,9 +38,9 @@ class CelestialBody:
         self.celestial_body_type = re.sub(
             r'([A-Z])', r' \1', self.__class__.__name__).strip()
         if name is None:
-            self.name = "Unnamed Celestial Body"
+            self.__name = "Unnamed Celestial Body"
         else:
-            self.name = name
+            self.__name = name
         self.primary_body = None
         self.orbiting_bodies = []
 
@@ -51,6 +51,14 @@ class CelestialBody:
         """To easily subclass, add subclass-specific stats to the
         additional_stats or orbital_stats property."""
         return self.basic_stats + self.additional_stats + self.orbital_stats
+
+    @property
+    def name(self):
+        """Getter for CelestialBody name. Note that name becomes a protected
+        attribute after initialization. This is to help prevent
+        name-switching from causing problems when used with the Universe
+        class."""
+        return self.__name
 
     @property
     def basic_stats(self) -> str:
