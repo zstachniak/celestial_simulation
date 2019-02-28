@@ -171,13 +171,13 @@ class Universe:
         print("".join(return_list))
 
     def __recursive_graph_sort(
-            self, root: CelestialBody) -> Dict[CelestialBody: dict]:
+            self, root: CelestialBody) -> Dict[CelestialBody, dict]:
         """Recursively walks through orbits to return the edges between
         vertices.
 
         :param CelestialBody root: CelestialBody at the root of the graph
         :return: a dictionary of key: Celestial Body, value: dict
-        :rtype: Dict[CelestialBody: dict]
+        :rtype: Dict[CelestialBody, dict]
         """
         edges = [x.orbiting_body for x in self.__orbits
                  if x.primary_body == root]
